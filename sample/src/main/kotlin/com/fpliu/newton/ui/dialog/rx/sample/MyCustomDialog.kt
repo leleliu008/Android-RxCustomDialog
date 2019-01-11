@@ -3,13 +3,15 @@ package com.fpliu.newton.ui.dialog.rx.sample
 import android.app.Activity
 import android.os.Bundle
 import com.fpliu.newton.log.Logger
-import com.fpliu.newton.ui.dialog.rx.RxCustomDialog
+import com.fpliu.newton.ui.dialog.CustomDialog
+import com.fpliu.newton.ui.dialog.rx.scope
+import com.uber.autodispose.autoDisposable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
-class MyDialog(activity: Activity) : RxCustomDialog(activity) {
+class MyCustomDialog(activity: Activity) : CustomDialog(activity) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,9 +22,9 @@ class MyDialog(activity: Activity) : RxCustomDialog(activity) {
             .doOnDispose {
                 Logger.i("XX", "doOnDispose()")
             }
-            .compose(bindUntilDismiss())
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .autoDisposable(scope())
             .subscribe {
                 Logger.i("XX", "onNext()")
             }

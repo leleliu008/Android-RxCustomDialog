@@ -1,4 +1,5 @@
 import com.fpliu.gradle.bintrayUploadExtension
+import java.util.Properties
 
 buildscript {
     repositories {
@@ -31,14 +32,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion(27)
-    buildToolsVersion("27.0.3")
+    compileSdkVersion(28)
 
     defaultConfig {
-        minSdkVersion(11)
-        targetSdkVersion(25)
+        minSdkVersion(18)
+        targetSdkVersion(28)
         versionCode = 1
-        versionName = "1.0.0"
+        versionName = "2.0.0"
     }
 
     sourceSets {
@@ -64,13 +64,28 @@ android {
     }
 }
 
+dependencies {
+    //http://kotlinlang.org/docs/reference/using-gradle.html#configuring-dependencies
+    api(kotlin("stdlib", rootProject.extra["kotlinVersion"] as String))
+
+    //https://github.com/JakeWharton/RxBinding
+    api("com.jakewharton.rxbinding3:rxbinding:3.0.0-alpha2")
+
+    //https://bintray.com/fpliu/newton
+    api("com.fpliu:Android-CustomDialog:1.0.0")
+
+    //https://github.com/uber/AutoDispose
+    api("com.uber.autodispose:autodispose-ktx:1.1.0")
+}
+
 // 这里是groupId，必须填写,一般填你唯一的包名
 group = "com.fpliu"
 
 //这个是版本号，必须填写
-version = "1.0.0"
+version = android.defaultConfig.versionName ?: "1.0.0"
 
 val rootProjectName: String = project.rootProject.name
+val properties = Properties().apply { load(rootProject.file("local.properties").inputStream()) }
 
 bintrayUploadExtension {
     developerName = "leleliu008"
@@ -82,23 +97,5 @@ bintrayUploadExtension {
     bintrayUserName = "fpliu"
     bintrayOrganizationName = "fpliu"
     bintrayRepositoryName = "newton"
-    bintrayApiKey = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-}
-
-dependencies {
-    api("com.fpliu:Android-CustomDialog:1.0.0")
-
-    //http://kotlinlang.org/docs/reference/using-gradle.html#configuring-dependencies
-    api("org.jetbrains.kotlin:kotlin-stdlib:1.2.21")
-
-    api("com.android.support:support-annotations:27.1.1")
-
-    //https://github.com/ReactiveX/RxJava
-    api("io.reactivex.rxjava2:rxandroid:2.0.2")
-
-    //https://github.com/JakeWharton/RxBinding
-    api("com.jakewharton.rxbinding2:rxbinding:2.0.0")
-
-    //https://github.com/trello/RxLifecycle
-    api("com.trello.rxlifecycle2:rxlifecycle:2.2.1")
+    bintrayApiKey = properties.getProperty("bintray.apikey")
 }
